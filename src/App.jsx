@@ -8,6 +8,7 @@ import { Suspense } from "react"
 import { Canvas } from "@react-three/fiber"
 import Lanyard from "./components/Lanyard/Lanyard"
 import profile from "./assets/profile.png"
+import splash from "./assets/splashlog.png"
 
 export default function App() {
   /* ===== LOADING ===== */
@@ -58,43 +59,64 @@ export default function App() {
 }
 
 /* ================= SPLASH LOADING ================= */
-function LoadingScreen() {
-  return (
-    <motion.div
-      initial={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      transition={{ duration: 0.8 }}
-      className="fixed inset-0 z-[999] flex flex-col items-center justify-center bg-black"
-    >
-      {/* SIGNAL BARS */}
-      <div className="flex gap-2 mb-6">
-        {[1, 2, 3, 4].map((i) => (
-          <motion.span
-            key={i}
-            animate={{ height: ["20px", "60px", "20px"] }}
-            transition={{
-              duration: 1,
-              repeat: Infinity,
-              delay: i * 0.15,
-              ease: "easeInOut",
-            }}
-            className="w-2 bg-cyan-400 rounded-full"
-          />
-        ))}
-      </div>
-
-      {/* TEXT */}
-      <motion.p
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.5 }}
-        className="text-sm tracking-widest text-gray-400"
+  function LoadingScreen() {
+    return (
+      <motion.div
+        initial={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        transition={{ duration: 0.8 }}
+        className="fixed inset-0 z-[999] flex items-center justify-center bg-black overflow-hidden"
       >
-        INITIALIZING SYSTEM
-      </motion.p>
-    </motion.div>
-  )
-}
+        {/* Glow Background */}
+        <motion.div
+          animate={{
+            scale: [1, 1.3, 1],
+            opacity: [0.25, 0.5, 0.25],
+          }}
+          transition={{
+            duration: 3,
+            repeat: Infinity,
+            ease: "easeInOut",
+          }}
+          className="absolute w-80 h-80 rounded-full bg-blue-500 blur-[120px]"
+        />
+
+        {/* Logo */}
+        <motion.img
+          src={splash}
+          alt="PK Logo"
+          initial={{
+            opacity: 0,
+            scale: 0.7,
+            filter: "blur(10px)",
+          }}
+          animate={{
+            opacity: 1,
+            scale: 1,
+            filter: "blur(0px)",
+          }}
+          transition={{
+            duration: 1.2,
+            ease: "easeOut",
+          }}
+          className="relative z-10 w-40 md:w-52 drop-shadow-[0_0_40px_rgba(249,115,22,0.6)]"
+        />
+
+        {/* Loading Text */}
+        <motion.p
+          initial={{ opacity: 0 }}
+          animate={{ opacity: [0.4, 1, 0.4] }}
+          transition={{
+            duration: 2,
+            repeat: Infinity,
+          }}
+          className="absolute bottom-24 text-sm tracking-[6px] uppercase text-gray-400"
+        >
+          Loading Portfolio...
+        </motion.p>
+      </motion.div>
+    )
+  }
 
 
 /* ================= NAVBAR ================= */
@@ -450,13 +472,13 @@ function Portfolio() {
           onClick={() => setSelectedProject(null)}
         >
           <div
-            className="relative w-[90%] md:w-[800px] bg-black rounded-xl p-6"
+            className="relative w-[95%] max-w-4xl max-h-[90vh] bg-black rounded-xl p-4 md:p-6 overflow-auto"
             onClick={(e) => e.stopPropagation()}
           >
             {/* IMAGE */}
             <img
               src={selectedProject.images[currentSlide]}
-              className={`w-full h-[400px] rounded-xl bg-black
+              className={`w-full max-h-[70vh] rounded-xl bg-black
               ${
                 selectedProject.title === "FayrMob"
                   ? "object-contain"
@@ -496,21 +518,46 @@ function Portfolio() {
         </div>
       )}
       {selectedCert && (
-      <div
-        className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center"
-        onClick={() => setSelectedCert(null)}
-      >
         <div
-          className="w-[90%] h-[90%] bg-black rounded-xl overflow-hidden"
-          onClick={(e) => e.stopPropagation()}
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4"
+          onClick={() => setSelectedCert(null)}
         >
-          <iframe
-            src={selectedCert}
-            className="w-full h-full"
-          />
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="bg-zinc-900 rounded-2xl shadow-2xl w-full max-w-5xl h-[90vh] flex flex-col overflow-hidden border border-white/10"
+          >
+            {/* Header */}
+            <div className="flex items-center justify-between px-5 py-3 border-b border-white/10">
+              <h2 className="text-white font-semibold">
+                Certificate Preview
+              </h2>
+
+              <button
+                onClick={() => setSelectedCert(null)}
+                className="text-gray-400 hover:text-white text-2xl"
+              >
+                ✕
+              </button>
+            </div>
+
+            {/* PDF */}
+            <iframe
+              src={selectedCert}
+              className="flex-1 w-full bg-white"
+            />
+            
+            {/* Footer */}
+            <div className="p-4 border-t border-white/10 flex justify-center">
+              <button
+                onClick={() => setSelectedCert(null)}
+                className="px-6 py-2 rounded-lg bg-cyan-500 text-black font-semibold hover:bg-cyan-400"
+              >
+                Tutup
+              </button>
+            </div>
+          </div>
         </div>
-      </div>
-    )}
+      )}
       {/* background glow */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] bg-cyan-500/10 blur-[160px] rounded-full"></div>
 
