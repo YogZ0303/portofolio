@@ -324,12 +324,12 @@ function About() {
         <div className="basis-full md:basis-5/12 h-[460px] flex justify-center items-center">
 
         {/* LANYARD */}
-        <Canvas
-          camera={{ position: [0, 0, 5.5], fov: 30 }}
-          fog attach="fog" args={["#000", 5, 10]} 
-          gl={{ alpha: true }}
-        >
+        <Canvas camera={{ position: [0, 0, 5.5], fov: 30 }} gl={{ alpha: true }}>
+          <fog attach="fog" args={["#000", 5, 10]} />
+
           <ambientLight intensity={0.8} />
+          <directionalLight position={[3, 4, 5]} intensity={1.2} />
+          <directionalLight position={[-3, -2, 3]} intensity={0.4} />
 
           <directionalLight
             position={[3, 4, 5]}
@@ -414,35 +414,38 @@ function Portfolio() {
   const certificates = [
     {
       title: "Bangkit Academy – Cloud Computing",
-      file: "/portofolio/sertifikat/1.pdf",
+      images: ["/portofolio/sertifikat/1.jpg"],
     },
     {
       title: "Badan Penanggulangan Bencana Daerah – Sertifikat Magang",
-      file: "/portofolio/sertifikat/2.pdf",
+      images: ["/portofolio/sertifikat/2.jpg"],
     },
     {
-    title: "PalComtech – Web Developer",
-    file: "/portofolio/sertifikat/3.pdf",
-    },
-    {
-      title: "Google Cloud Skill Boost – Cloud Computing",
-      file: "/portofolio/sertifikat/4.pdf",
-    },
-    {
-      title: "Google Cloud Skill Boost – Cloud Computing",
-      file: "/portofolio/sertifikat/5.pdf",
-    },
-    {
-    title: "Google Cloud Skill Boost – Cloud Computing",
-    file: "/portofolio/sertifikat/6.pdf",
+      title: "PalComtech – Web Developer",
+      images: [
+        "/portofolio/sertifikat/bootcamp/1.jpg",
+        "/portofolio/sertifikat/bootcamp/2.jpg",
+      ],
     },
     {
       title: "Google Cloud Skill Boost – Cloud Computing",
-      file: "/portofolio/sertifikat/7.pdf",
+      images: ["/portofolio/sertifikat/4.jpg"],
+    },
+    {
+      title: "Google Cloud Skill Boost – Cloud Computing",
+      images: ["/portofolio/sertifikat/5.jpg"],
+    },
+    {
+      title: "Google Cloud Skill Boost – Cloud Computing",
+      images: ["/portofolio/sertifikat/6.jpg"],
+    },
+    {
+      title: "Google Cloud Skill Boost – Cloud Computing",
+      images: ["/portofolio/sertifikat/7.jpg"],
     },
     {
       title: "Dicoding – Web Programming Fundamentals",
-      file: "/portofolio/sertifikat/8.pdf",
+      images: ["/portofolio/sertifikat/8.jpg"],
     },
   ]
 
@@ -519,42 +522,46 @@ function Portfolio() {
       )}
       {selectedCert && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4"
+          className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center"
           onClick={() => setSelectedCert(null)}
         >
           <div
+            className="relative w-[95%] max-w-4xl max-h-[90vh] bg-black rounded-xl p-4 md:p-6 overflow-auto"
             onClick={(e) => e.stopPropagation()}
-            className="bg-zinc-900 rounded-2xl shadow-2xl w-full max-w-5xl h-[90vh] flex flex-col overflow-hidden border border-white/10"
           >
-            {/* Header */}
-            <div className="flex items-center justify-between px-5 py-3 border-b border-white/10">
-              <h2 className="text-white font-semibold">
-                Certificate Preview
-              </h2>
-
-              <button
-                onClick={() => setSelectedCert(null)}
-                className="text-gray-400 hover:text-white text-2xl"
-              >
-                ✕
-              </button>
-            </div>
-
-            {/* PDF */}
-            <iframe
-              src={selectedCert}
-              className="flex-1 w-full bg-white"
+            {/* IMAGE */}
+            <img
+              src={selectedCert[currentSlide]}
+              alt="Certificate"
+              className="w-full max-h-[70vh] object-contain rounded-xl bg-black"
             />
-            
-            {/* Footer */}
-            <div className="p-4 border-t border-white/10 flex justify-center">
-              <button
-                onClick={() => setSelectedCert(null)}
-                className="px-6 py-2 rounded-lg bg-cyan-500 text-black font-semibold hover:bg-cyan-400"
-              >
-                Tutup
-              </button>
-            </div>
+
+            {/* BUTTON */}
+            {selectedCert.length > 1 && (
+              <div className="flex justify-between mt-4">
+                <button
+                  onClick={() =>
+                    setCurrentSlide((prev) =>
+                      prev === 0 ? selectedCert.length - 1 : prev - 1
+                    )
+                  }
+                  className="px-4 py-2 bg-white/10 rounded-lg hover:bg-white/20"
+                >
+                  Prev
+                </button>
+
+                <button
+                  onClick={() =>
+                    setCurrentSlide((prev) =>
+                      prev === selectedCert.length - 1 ? 0 : prev + 1
+                    )
+                  }
+                  className="px-4 py-2 bg-white/10 rounded-lg hover:bg-white/20"
+                >
+                  Next
+                </button>
+              </div>
+            )}
           </div>
         </div>
       )}
@@ -688,14 +695,18 @@ function Portfolio() {
               <motion.div
                 key={i}
                 whileHover={{ scale: 1.05 }}
-                onClick={() => setSelectedCert(item.file)}
+                onClick={() => {
+                  setSelectedCert(item.images)
+                  setCurrentSlide(0)
+                }}
                 className="cursor-pointer overflow-hidden rounded-3xl border border-white/10
                 bg-white/5 backdrop-blur-xl hover:border-cyan-400 transition"
               >
-                {/* Preview PDF */}
-                <iframe
-                  src={item.file}
-                  className="w-full h-52 pointer-events-none"
+                {/* Preview sertifikat */}
+                <img
+                  src={item.images[0]}
+                  alt={item.title}
+                  className="w-full h-52 object-cover"
                 />
 
                 <div className="p-4">
